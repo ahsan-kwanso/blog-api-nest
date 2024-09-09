@@ -20,3 +20,5 @@ describe('AppController', () => {
     });
   });
 });
+
+// This file is for unit tests for controllers, keep it for reference if you write unit tests in future
