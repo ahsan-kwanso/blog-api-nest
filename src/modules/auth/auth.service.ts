@@ -25,7 +25,7 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto): Promise<string> {
-    const user = await this.userModel.findOne({
+    const user = await this.userModel.scope('withPassword').findOne({
       where: { email: loginDto.email },
     });
     if (!user || !(await user.validatePassword(loginDto.password))) {
