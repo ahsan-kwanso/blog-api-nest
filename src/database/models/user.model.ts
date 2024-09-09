@@ -43,7 +43,7 @@ export class User extends Model<User> {
   email: string;
 
   @Column({
-    type: DataType.STRING(50),
+    type: DataType.STRING(100),
     allowNull: false,
   })
   password: string;
