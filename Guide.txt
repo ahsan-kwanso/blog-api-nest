@@ -11,3 +11,35 @@ then made a module for db
 then imported that module in main file of app.module.ts
 
 Models are made in db and they are following the constraints as well. Now I will start writing the business logic for the application, and other things like validators, guards middlewares
+
+
+npx sequelize migration:create --name add-some-table
+
+will just generate a migration file, in path specified in .sequelizerc
+
+
+const { resolve } = require('path');
+
+module.exports = {
+  config: resolve('src/config/sequelize.config.js'),
+  'seeders-path': resolve('dist/database/seeders'),
+  'migrations-path': resolve('dist/database/migrations'),
+  'models-path': resolve('dist/database/models'),
+};
+
+
+actually this is important as now you have ts files and you have to consider js files so go for that dist folder
+
+const { resolve } = require('path');
+
+module.exports = {
+  config: resolve('src/config/sequelize.config.js'),
+  'seeders-path': resolve('src/database/seeders'),
+  'migrations-path': resolve('src/database/migrations'),
+  'models-path': resolve('dist/database/models'),
+};
+
+chnaged these to src as create migration and seeders in src directory then changes file extension and so again back to previou sequelizerc file.
+
+npx sequelize-cli db:migrate  
+npx sequelize-cli db:seed:all
