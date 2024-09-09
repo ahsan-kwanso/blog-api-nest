@@ -1,0 +1,13 @@
+set up the initial folder structure
+search for the folder structures for nestjs projects
+I will be following the modular structure
+first start with setting up the database models and connections
+Will be using sequelize for this
+
+
+setted the models
+then connected the db in config section
+then made a module for db
+then imported that module in main file of app.module.ts
+
+Models are made in db and they are following the constraints as well. Now I will start writing the business logic for the application, and other things like validators, guards middlewares
