@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { DatabaseModule } from './modules/database.module';
 import { UserModule } from './modules/user/user.module';
+import { PostModule } from './modules/post/post.module';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
@@ -8,6 +9,7 @@ import { ConfigModule } from '@nestjs/config';
     ConfigModule.forRoot({ isGlobal: true }), // Load .env config globally
     DatabaseModule,
     UserModule,
+    PostModule,
   ],
 })
 export class AppModule {}
