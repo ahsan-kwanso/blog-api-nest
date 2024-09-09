@@ -1,8 +1,26 @@
-import { Table, Column, Model, DataType, HasMany } from 'sequelize-typescript';
+import {
+  Table,
+  Column,
+  Model,
+  DataType,
+  HasMany,
+  BeforeSave,
+} from 'sequelize-typescript';
 import { Post } from './post.model';
 import { Comment } from './comment.model';
+import * as bcrypt from 'bcrypt';
 
-@Table
+@Table({
+  timestamps: true,
+  defaultScope: {
+    attributes: { exclude: ['password'] }, // Exclude password by default
+  },
+  scopes: {
+    withPassword: {
+      attributes: { include: ['password'] }, // Include password when needed
+    },
+  },
+})
 export class User extends Model<User> {
   @Column({
     type: DataType.INTEGER,
@@ -30,7 +48,6 @@ export class User extends Model<User> {
   })
   password: string;
 
-  // Added role column
   @Column({
     type: DataType.ENUM('admin', 'user'),
     allowNull: false,
@@ -43,4 +60,18 @@ export class User extends Model<User> {
 
   @HasMany(() => Comment)
   comments: Comment[];
+
+  // Add a beforeSave hook to hash the password before saving it to the database
+  @BeforeSave
+  static async hashPassword(user: User) {
+    if (user.changed('password')) {
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(user.password, salt);
+    }
+  }
+
+  // Add a method to validate the password when logging in
+  async validatePassword(password: string): Promise<boolean> {
+    return bcrypt.compare(password, this.password);
+  }
 }
