@@ -43,3 +43,28 @@ chnaged these to src as create migration and seeders in src directory then chang
 
 npx sequelize-cli db:migrate  
 npx sequelize-cli db:seed:all
+
+
+Now start working on the business logic
+
+
+Suggested Order of Development:
+Modular Structure: Define the module structure for the app (UserModule, PostModule, CommentModule, etc.).
+Controllers & Services: Create simple controllers and services for core features (CRUD operations, DB interactions).
+Authentication: Set up authentication with JWT and implement login, registration, and protected routes.
+Authorization & Guards: Add guards to secure routes based on user roles and permissions.
+Typeguards & Validation: Ensure all request inputs are type-checked and validated.
+Middlewares & Interceptors: Introduce middleware for logging, security, or request preprocessing. Use interceptors for cross-cutting concerns like response transformation and error handling.
+This approach allows you to have a working version of the application quickly while maintaining the flexibility to scale and secure it progressively.
+
+
+First start with user module keep in mind the flow of the applicationa as well, like how to write code
+define the data transfer objects
+define the service
+define the controller
+define the module
+import that module in main module
+
+so this is flow
+
+Now add global error handling mechanism as well

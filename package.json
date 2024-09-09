@@ -26,6 +26,7 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/sequelize": "^10.0.1",
     "bcrypt": "^5.1.1",
+    "class-validator": "^0.14.1",
     "dotenv": "^16.4.5",
     "nestjs-sequelize-seeder": "^1.1.4",
     "pg": "^8.12.0",
