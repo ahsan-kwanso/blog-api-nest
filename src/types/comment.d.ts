@@ -3,7 +3,6 @@ import { Optional } from 'sequelize';
 // Base interface for comment data
 interface BaseCommentData {
   id: number;
-  title: string;
   content: string;
   createdAt: Date;
   updatedAt: Date;
@@ -12,7 +11,7 @@ interface BaseCommentData {
 // Interface for comment including user and post associations
 interface Comment extends BaseCommentData {
   PostId: number;
-  ParentId?: number;
+  ParentCommentId?: number;
   UserId: number;
 }
 
@@ -20,7 +19,7 @@ interface Comment extends BaseCommentData {
 interface CommentData extends BaseCommentData {
   UserId: number;
   PostId: number;
-  ParentId: number | null;
+  ParentCommentId: number | null;
   subComments: CommentData[];
 }
 
