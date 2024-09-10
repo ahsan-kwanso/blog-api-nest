@@ -7,12 +7,14 @@ import {
   Body,
   Patch,
   Req,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { Comment } from 'src/database/models/comment.model';
 import { Request } from 'express';
+import { CommentData } from 'src/types/comment';
 
 @Controller('comments')
 export class CommentController {
@@ -32,14 +34,21 @@ export class CommentController {
     return this.commentService.findAll();
   }
 
+  @Get('/post/:id')
+  async findCommentsOnPost(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<CommentData[]> {
+    return this.commentService.findAllByPostId(id);
+  }
+
   @Get(':id')
-  async findOne(@Param('id') id: number): Promise<Comment> {
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<Comment> {
     return this.commentService.findOne(id);
   }
 
   @Patch(':id')
   async update(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateCommentDto: UpdateCommentDto,
     @Req() req: Request,
   ): Promise<Comment> {
@@ -48,7 +57,10 @@ export class CommentController {
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: number, @Req() req: Request): Promise<void> {
+  async remove(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: Request,
+  ): Promise<void> {
     const userId = req.user.id; // Extract UserId from JWT token
     return this.commentService.remove(id, userId);
   }
