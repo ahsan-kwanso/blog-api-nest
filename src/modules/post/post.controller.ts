@@ -7,13 +7,15 @@ import {
   Delete,
   ParseIntPipe,
   Patch,
-  Request,
+  Query,
+  Req,
 } from '@nestjs/common';
 import { Request as ExpressRequest } from 'express';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { Post as PostModel } from 'src/database/models/post.model';
+import { PaginatedPostsResponse } from 'src/types/post';
 
 @Controller('posts')
 export class PostController {
@@ -23,16 +25,25 @@ export class PostController {
   @Post()
   async create(
     @Body() createPostDto: CreatePostDto,
-    @Request() req: ExpressRequest,
+    @Req() req: ExpressRequest,
   ): Promise<PostModel> {
     const userId = req.user.id; // Extract userId from the JWT
     return this.postService.create(createPostDto, userId);
   }
 
   // Get all posts
+  // @Get()
+  // async findAll(): Promise<PostModel[]> {
+  //   return this.postService.findAll();
+  // }
+
   @Get()
-  async findAll(): Promise<PostModel[]> {
-    return this.postService.findAll();
+  async getPosts(
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+    @Req() req: ExpressRequest, // Add the request object
+  ): Promise<PaginatedPostsResponse> {
+    return this.postService.getPosts(page, limit, req);
   }
 
   // Get a single post by ID
@@ -46,7 +57,7 @@ export class PostController {
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updatePostDto: UpdatePostDto,
-    @Request() req: ExpressRequest,
+    @Req() req: ExpressRequest,
   ): Promise<PostModel> {
     const userId = req.user.id; // Extract userId from the JWT
     return this.postService.update(id, updatePostDto, userId);
@@ -56,7 +67,7 @@ export class PostController {
   @Delete(':id')
   async remove(
     @Param('id', ParseIntPipe) id: number,
-    @Request() req: ExpressRequest,
+    @Req() req: ExpressRequest,
   ): Promise<void> {
     const userId = req.user.id; // Extract userId from the JWT
     return this.postService.remove(id, userId);

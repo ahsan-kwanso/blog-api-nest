@@ -9,8 +9,8 @@ export interface PostAttributes {
 
 // Common Post type
 export interface Post extends PostAttributes {
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 // Post with User
@@ -26,7 +26,7 @@ interface PostResponse {
   author?: string; // Represents the user's name
   title: string;
   content: string;
-  date: string; // Formatted date as YYYY-MM-DD
+  date?: string; // Formatted date as YYYY-MM-DD
 }
 
 // Error Response
