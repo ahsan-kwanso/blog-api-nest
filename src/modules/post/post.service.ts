@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Post } from 'src/database/models/post.model';
@@ -15,12 +16,14 @@ export class PostService {
     private readonly postModel: typeof Post,
   ) {}
 
-  async create(createPostDto: CreatePostDto): Promise<Post> {
+  async create(createPostDto: CreatePostDto, UserId: number): Promise<Post> {
     try {
-      const post = await this.postModel.create(createPostDto as any);
+      const post = await this.postModel.create({
+        ...createPostDto,
+        UserId, // Attach the userId from the request (decoded JWT)
+      } as Post);
       return post.reload();
     } catch (error) {
-      // Handle specific errors if needed
       throw new ConflictException('Failed to create post');
     }
   }
@@ -37,14 +40,34 @@ export class PostService {
     return post;
   }
 
-  async update(id: number, updatePostDto: UpdatePostDto): Promise<Post> {
+  async update(
+    id: number,
+    updatePostDto: UpdatePostDto,
+    userId: number,
+  ): Promise<Post> {
     const post = await this.findOne(id);
+
+    // Check if the user owns the post
+    if (post.UserId !== userId) {
+      throw new ForbiddenException(
+        'You do not have permission to update this post',
+      );
+    }
+
     await post.update(updatePostDto);
     return post;
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: number, userId: number): Promise<void> {
     const post = await this.findOne(id);
+
+    // Check if the user owns the post
+    if (post.UserId !== userId) {
+      throw new ForbiddenException(
+        'You do not have permission to delete this post',
+      );
+    }
+
     await post.destroy();
   }
 }
