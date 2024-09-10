@@ -1,8 +1,11 @@
-import { IsOptional, IsString, IsInt } from 'class-validator';
+import { IsOptional, IsString, IsInt, Length } from 'class-validator';
 
 export class UpdateCommentDto {
   @IsString()
   @IsOptional()
+  @Length(1, 25, {
+    message: 'comment must be between 1 and 25 characters long',
+  })
   content?: string;
 
   @IsInt()
