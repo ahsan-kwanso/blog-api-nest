@@ -94,6 +94,9 @@ export class PostService {
     const pageSize = Number(limit);
     const pageNumber = Number(page);
 
+    if (userId !== req.user.id) {
+      throw new ForbiddenException('You do not have permissions');
+    }
     // Fetch posts with pagination
     const { count, rows } = await this.postModel.findAndCountAll({
       where: {
@@ -195,6 +198,10 @@ export class PostService {
   ): Promise<PaginatedPostsResponse> {
     const pageSize = Number(limit);
     const pageNumber = Number(page);
+
+    if (userId !== req.user.id) {
+      throw new ForbiddenException('You do not have permissions');
+    }
 
     const { count, rows } = await this.postModel.findAndCountAll({
       where: {
