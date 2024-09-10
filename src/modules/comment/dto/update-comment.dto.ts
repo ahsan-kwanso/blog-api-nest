@@ -7,10 +7,6 @@ export class UpdateCommentDto {
 
   @IsInt()
   @IsOptional()
-  UserId?: number;
-
-  @IsInt()
-  @IsOptional()
   PostId?: number;
 
   @IsInt()

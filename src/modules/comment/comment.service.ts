@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Comment } from 'src/database/models/comment.model';
 import { CreateCommentDto } from './dto/create-comment.dto';
@@ -11,8 +15,14 @@ export class CommentService {
     private readonly commentModel: typeof Comment,
   ) {}
 
-  async create(createCommentDto: CreateCommentDto): Promise<Comment> {
-    const comment = await this.commentModel.create(createCommentDto as any);
+  async create(
+    createCommentDto: CreateCommentDto,
+    UserId: number,
+  ): Promise<Comment> {
+    const comment = await this.commentModel.create({
+      ...createCommentDto,
+      UserId, // Attach the UserId from the JWT token
+    } as Comment);
     return comment.reload();
   }
 
@@ -31,14 +41,31 @@ export class CommentService {
   async update(
     id: number,
     updateCommentDto: UpdateCommentDto,
+    UserId: number,
   ): Promise<Comment> {
     const comment = await this.findOne(id);
+
+    // Check if the user owns the comment
+    if (comment.UserId !== UserId) {
+      throw new ForbiddenException(
+        'You do not have permission to update this comment',
+      );
+    }
+
     await comment.update(updateCommentDto);
     return comment;
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: number, UserId: number): Promise<void> {
     const comment = await this.findOne(id);
+
+    // Check if the user owns the comment
+    if (comment.UserId !== UserId) {
+      throw new ForbiddenException(
+        'You do not have permission to delete this comment',
+      );
+    }
+
     await comment.destroy();
   }
 }
