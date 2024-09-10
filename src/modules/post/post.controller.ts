@@ -9,6 +9,7 @@ import {
   Patch,
   Query,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { Request as ExpressRequest } from 'express';
 import { PaginationQueryDto } from './dto/pagination.dto';
@@ -17,6 +18,7 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { Post as PostModel } from 'src/database/models/post.model';
 import { PaginatedPostsResponse } from 'src/types/post';
+import { JwtConditionalAuthGuard } from '../auth/jwt.auth.guard';
 
 @Controller('posts')
 export class PostController {
@@ -38,6 +40,7 @@ export class PostController {
   //   return this.postService.findAll();
   // }
 
+  @UseGuards(JwtConditionalAuthGuard) // as I have removed middlware authentication so this will check if filter is passed because in that case authentication is required
   @Get()
   async getPosts(
     @Query() paginationQuery: PaginationQueryDto,
@@ -61,6 +64,7 @@ export class PostController {
     }
   }
 
+  @UseGuards(JwtConditionalAuthGuard)
   @Get('/search')
   async searchPosts(
     @Query() paginationQuery: PaginationQueryDto,

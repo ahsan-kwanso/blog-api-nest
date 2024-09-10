@@ -35,6 +35,7 @@ export class AppModule implements NestModule {
     consumer
       .apply(AuthMiddleware)
       .exclude({ path: 'auth', method: RequestMethod.POST }, 'auth/(.*)') // Exclude auth routes from middleware
+      .exclude({ path: 'posts', method: RequestMethod.GET }, 'posts/search') // The authentication is added through guard and we have removed authentication from get methods, but using guard will apply authentication based on the filter query param
       .forRoutes('*'); // Apply to all routes
   }
 }
