@@ -41,9 +41,15 @@ export class PostController {
   async getPosts(
     @Query('page') page: number,
     @Query('limit') limit: number,
+    @Query('filter') filter: string, // Additional query parameter
+    @Query('userId') userId: string,
     @Req() req: ExpressRequest, // Add the request object
   ): Promise<PaginatedPostsResponse> {
-    return this.postService.getPosts(page, limit, req);
+    if (filter === 'my-posts' && userId) {
+      return this.postService.getMyPosts(parseInt(userId), page, limit, req);
+    } else {
+      return this.postService.getPosts(page, limit, req);
+    }
   }
 
   // Get a single post by ID

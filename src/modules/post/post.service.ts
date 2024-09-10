@@ -11,11 +11,7 @@ import { User } from 'src/database/models/user.model';
 import { UrlGeneratorService } from 'src/utils/pagination.util';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import {
-  PaginatedPostsResponse,
-  PostResponse,
-  PostWithUser,
-} from 'src/types/post';
+import { PaginatedPostsResponse, PostResponse } from 'src/types/post';
 import paginationConfig from 'src/utils/pagination.config';
 
 @Injectable()
@@ -47,9 +43,8 @@ export class PostService {
     limit: number = paginationConfig.defaultLimit,
     req: ExpressRequest,
   ): Promise<PaginatedPostsResponse> {
-    const pageSize = limit;
-    const pageNumber = page;
-
+    const pageSize = Number(limit);
+    const pageNumber = Number(page);
     // Fetch posts with pagination
     const { count, rows } = await this.postModel.findAndCountAll({
       limit: pageSize,
@@ -64,9 +59,60 @@ export class PostService {
     });
 
     // Map posts to required format
-    const posts: PostResponse[] = rows.map((post: PostWithUser) => ({
+    const posts: PostResponse[] = rows.map((post) => ({
       id: post.id,
-      author: post.User?.name, // Access the user's name
+      author: post.user.name, // Access the user's name
+      title: post.title,
+      content: post.content,
+      date: post.updatedAt?.toISOString().split('T')[0], // Format date as YYYY-MM-DD
+    }));
+
+    // Calculate pagination details
+    const totalPages = Math.ceil(count / pageSize);
+    const nextPage = pageNumber < totalPages ? pageNumber + 1 : null;
+
+    return {
+      posts,
+      total: count,
+      page: pageNumber,
+      pageSize: pageSize,
+      nextPage: this.urlGeneratorService.generateNextPageUrl(
+        nextPage,
+        pageSize,
+        req,
+      ), // Use the UrlGeneratorService
+    };
+  }
+
+  async getMyPosts(
+    userId: number,
+    page: number = paginationConfig.defaultPage,
+    limit: number = paginationConfig.defaultLimit,
+    req: ExpressRequest,
+  ): Promise<PaginatedPostsResponse> {
+    const pageSize = Number(limit);
+    const pageNumber = Number(page);
+
+    // Fetch posts with pagination
+    const { count, rows } = await this.postModel.findAndCountAll({
+      where: {
+        UserId: userId, // Filter posts by the current user's ID
+      },
+      limit: pageSize,
+      offset: (pageNumber - 1) * pageSize,
+      include: [
+        {
+          model: User,
+          attributes: ['name'], // Fetch only the name attribute from the User model
+        },
+      ],
+      order: [['createdAt', 'DESC']],
+    });
+
+    // Map posts to required format
+    const posts: PostResponse[] = rows.map((post) => ({
+      id: post.id,
+      author: post.user.name, // Access the user's name
       title: post.title,
       content: post.content,
       date: post.updatedAt?.toISOString().split('T')[0], // Format date as YYYY-MM-DD

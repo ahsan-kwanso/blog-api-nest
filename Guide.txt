@@ -83,6 +83,15 @@ see how and where you use APP_GUARD globally
 Now add your custom needed services, then I will test frontend, then I will further look for improvements, like gurads Authorization
 
 
+me request done
+now implement get posts get myposts search posts search my posts also add that custom middleware apply and routing request based on filter param as in your prev backend
+
+
+then move to comment part
+
+then move to authorization part
+
+then more
 
 
 
