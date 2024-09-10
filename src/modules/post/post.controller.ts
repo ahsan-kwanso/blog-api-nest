@@ -10,6 +10,7 @@ import {
   Query,
   Req,
   UseGuards,
+  Put,
 } from '@nestjs/common';
 import { Request as ExpressRequest } from 'express';
 import { PaginationQueryDto } from './dto/pagination.dto';
@@ -98,7 +99,7 @@ export class PostController {
   }
 
   // Update a post by ID (only if the user owns the post)
-  @Patch(':id')
+  @Put(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updatePostDto: UpdatePostDto,
