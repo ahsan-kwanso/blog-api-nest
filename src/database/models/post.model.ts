@@ -36,7 +36,7 @@ export class Post extends Model<Post> {
   title: string;
 
   @Column({
-    type: DataType.STRING(200),
+    type: DataType.STRING(500),
     allowNull: false,
   })
   content: string;
