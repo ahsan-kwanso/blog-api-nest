@@ -78,3 +78,6 @@ Now add global error handling mechanism as well
 See how to remove any from services
 add your authmiddleware in main file as in app.module.ts specified in prompt, and then test, then add customized services and then further more things
 see how and where you use APP_GUARD globally
+
+
+Now add your custom needed services, then I will test frontend, then I will further look for improvements

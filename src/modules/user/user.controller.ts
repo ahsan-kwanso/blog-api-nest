@@ -6,10 +6,12 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Request as ExpressRequest } from 'express';
 
 @Controller('users')
 export class UserController {
@@ -23,6 +25,13 @@ export class UserController {
   @Get()
   async findAll() {
     return this.userService.findAll();
+  }
+
+  // get the logged in user
+  @Get('/me')
+  async currentUser(@Req() req: ExpressRequest) {
+    const UserId = req.user?.id;
+    return this.userService.getCurrentUser(UserId);
   }
 
   @Get(':id')

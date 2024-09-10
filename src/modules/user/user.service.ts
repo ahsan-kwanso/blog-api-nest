@@ -51,4 +51,9 @@ export class UserService {
     const user = await this.findOne(id);
     await user.destroy();
   }
+
+  // get logged in user
+  async getCurrentUser(id: number): Promise<User> {
+    return this.findOne(id);
+  }
 }
