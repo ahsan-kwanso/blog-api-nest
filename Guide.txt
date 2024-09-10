@@ -80,4 +80,18 @@ add your authmiddleware in main file as in app.module.ts specified in prompt, an
 see how and where you use APP_GUARD globally
 
 
-Now add your custom needed services, then I will test frontend, then I will further look for improvements
+Now add your custom needed services, then I will test frontend, then I will further look for improvements, like gurads Authorization
+
+
+
+
+
+
+
+
+
+
+
+
+
+Covert that jwt util to class based at the end
