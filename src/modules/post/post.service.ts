@@ -5,6 +5,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { Request as ExpressRequest } from 'express';
+import { Op } from 'sequelize';
 import { InjectModel } from '@nestjs/sequelize';
 import { Post } from 'src/database/models/post.model';
 import { User } from 'src/database/models/user.model';
@@ -132,6 +133,108 @@ export class PostService {
         pageSize,
         req,
       ), // Use the UrlGeneratorService
+    };
+  }
+
+  async searchPostsByTitle(
+    title: string,
+    page: number = paginationConfig.defaultPage,
+    limit: number = paginationConfig.defaultLimit,
+    req: ExpressRequest,
+  ): Promise<PaginatedPostsResponse> {
+    const pageSize = Number(limit);
+    const pageNumber = Number(page);
+
+    const { count, rows } = await this.postModel.findAndCountAll({
+      where: {
+        title: {
+          [Op.iLike]: `%${title}%`, // Case-insensitive
+        },
+      },
+      limit: pageSize,
+      offset: (pageNumber - 1) * pageSize,
+      include: [
+        {
+          model: User,
+          attributes: ['name'],
+        },
+      ],
+      order: [['createdAt', 'DESC']],
+    });
+
+    const posts: PostResponse[] = rows.map((post) => ({
+      id: post.id,
+      author: post.user.name,
+      title: post.title,
+      content: post.content,
+      date: post.updatedAt.toISOString().split('T')[0],
+    }));
+
+    const totalPages = Math.ceil(count / pageSize);
+    const nextPage = pageNumber < totalPages ? pageNumber + 1 : null;
+
+    return {
+      posts,
+      total: count,
+      page: pageNumber,
+      pageSize: pageSize,
+      nextPage: this.urlGeneratorService.generateNextPageUrl(
+        nextPage,
+        pageSize,
+        req,
+      ),
+    };
+  }
+
+  async searchUserPostsByTitle(
+    userId: number,
+    title: string,
+    page: number = paginationConfig.defaultPage,
+    limit: number = paginationConfig.defaultLimit,
+    req: ExpressRequest,
+  ): Promise<PaginatedPostsResponse> {
+    const pageSize = Number(limit);
+    const pageNumber = Number(page);
+
+    const { count, rows } = await this.postModel.findAndCountAll({
+      where: {
+        title: {
+          [Op.iLike]: `%${title}%`, // Case-insensitive
+        },
+        UserId: userId,
+      },
+      limit: pageSize,
+      offset: (pageNumber - 1) * pageSize,
+      include: [
+        {
+          model: User,
+          attributes: ['name'],
+        },
+      ],
+      order: [['createdAt', 'DESC']],
+    });
+
+    const posts: PostResponse[] = rows.map((post) => ({
+      id: post.id,
+      author: post.user.name,
+      title: post.title,
+      content: post.content,
+      date: post.updatedAt.toISOString().split('T')[0],
+    }));
+
+    const totalPages = Math.ceil(count / pageSize);
+    const nextPage = pageNumber < totalPages ? pageNumber + 1 : null;
+
+    return {
+      posts,
+      total: count,
+      page: pageNumber,
+      pageSize: pageSize,
+      nextPage: this.urlGeneratorService.generateNextPageUrl(
+        nextPage,
+        pageSize,
+        req,
+      ),
     };
   }
 

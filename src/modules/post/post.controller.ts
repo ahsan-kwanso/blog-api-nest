@@ -11,6 +11,7 @@ import {
   Req,
 } from '@nestjs/common';
 import { Request as ExpressRequest } from 'express';
+import { PaginationQueryDto } from './dto/pagination.dto';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -39,16 +40,50 @@ export class PostController {
 
   @Get()
   async getPosts(
-    @Query('page') page: number,
-    @Query('limit') limit: number,
+    @Query() paginationQuery: PaginationQueryDto,
     @Query('filter') filter: string, // Additional query parameter
     @Query('userId') userId: string,
     @Req() req: ExpressRequest, // Add the request object
   ): Promise<PaginatedPostsResponse> {
     if (filter === 'my-posts' && userId) {
-      return this.postService.getMyPosts(parseInt(userId), page, limit, req);
+      return this.postService.getMyPosts(
+        parseInt(userId),
+        paginationQuery.page,
+        paginationQuery.limit,
+        req,
+      );
     } else {
-      return this.postService.getPosts(page, limit, req);
+      return this.postService.getPosts(
+        paginationQuery.page,
+        paginationQuery.limit,
+        req,
+      );
+    }
+  }
+
+  @Get('/search')
+  async searchPosts(
+    @Query() paginationQuery: PaginationQueryDto,
+    @Query('title') title: string,
+    @Query('filter') filter: string,
+    @Query('userId') userId: string,
+    @Req() req: ExpressRequest,
+  ): Promise<PaginatedPostsResponse> {
+    if (filter === 'my-posts' && userId) {
+      return this.postService.searchUserPostsByTitle(
+        parseInt(userId),
+        title,
+        paginationQuery.page,
+        paginationQuery.limit,
+        req,
+      );
+    } else {
+      return this.postService.searchPostsByTitle(
+        title,
+        paginationQuery.page,
+        paginationQuery.limit,
+        req,
+      );
     }
   }
 
