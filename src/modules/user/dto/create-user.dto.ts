@@ -1,10 +1,13 @@
+import { Optional } from '@nestjs/common';
 import {
   IsEmail,
   IsEnum,
   IsNotEmpty,
+  IsOptional,
   IsString,
   MinLength,
 } from 'class-validator';
+import { Role } from 'src/types/role.enum';
 
 export class CreateUserDto {
   @IsString()
@@ -20,6 +23,6 @@ export class CreateUserDto {
   password: string;
 
   @IsEnum(['admin', 'user'])
-  @IsNotEmpty()
-  role: 'admin' | 'user';
+  @IsOptional()
+  role?: Role;
 }

@@ -94,7 +94,32 @@ then move to authorization part
 then more
 
 
+If you want to modify db schema without running migrations use 
+await sequelize.sync({ alter: true });
+other wise run migrations and do so
 
+
+Ok so which concepts are covered so far
+modules
+providers
+controllers
+middlewares
+pipes
+guards
+exception filters
+migrations
+seeders
+sequelize
+CRUD
+customizable services according to the use cases
+
+
+Now will add some authorization to frontend like this will be passing props and some button addition for seeing all the users etc. For sake of practice. Then will review the code and improve it.
+
+
+What I am going to do:
+Admin will be able to delete any post, admin will be able to see all users or make any user admin.
+I have to think of way that I have to send information in jwt payload if someone is admin, and then ignore the checks there for matching userId just directly delete the post.
 
 
 

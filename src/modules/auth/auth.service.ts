@@ -21,7 +21,12 @@ export class AuthService {
     }
 
     const user = await this.userModel.create(signupDto as any);
-    return generateToken({ id: user.id, name: user.name, email: user.email });
+    return generateToken({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    });
   }
 
   async login(loginDto: LoginDto): Promise<string> {
@@ -31,6 +36,11 @@ export class AuthService {
     if (!user || !(await user.validatePassword(loginDto.password))) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    return generateToken({ id: user.id, name: user.name, email: user.email });
+    return generateToken({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    });
   }
 }

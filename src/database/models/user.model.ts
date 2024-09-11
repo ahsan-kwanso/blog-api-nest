@@ -9,6 +9,7 @@ import {
 import { Post } from './post.model';
 import { Comment } from './comment.model';
 import * as bcrypt from 'bcrypt';
+import { Role } from 'src/types/role.enum';
 
 @Table({
   timestamps: true,
@@ -53,7 +54,7 @@ export class User extends Model<User> {
     allowNull: false,
     defaultValue: 'user', // Default role is user
   })
-  role: 'admin' | 'user';
+  role: Role;
 
   @HasMany(() => Post)
   posts: Post[];
