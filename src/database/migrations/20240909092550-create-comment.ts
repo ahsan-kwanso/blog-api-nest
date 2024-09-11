@@ -34,7 +34,7 @@ export = {
           model: 'Comments',
           key: 'id',
         },
-        onDelete: 'SET NULL',
+        onDelete: 'CASCADE',
       },
       content: {
         type: DataTypes.STRING(100),
