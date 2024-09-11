@@ -47,6 +47,7 @@ export class UserController {
   }
 
   @Patch(':id')
+  @Roles(Role.ADMIN) // as for my purpose only admin should edit
   async update(
     @Param('id', ParseIntPipe) id: string,
     @Body() updateUserDto: UpdateUserDto,
