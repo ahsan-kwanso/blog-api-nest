@@ -122,7 +122,11 @@ Admin will be able to delete any post, admin will be able to see all users or ma
 I have to think of way that I have to send information in jwt payload if someone is admin, and then ignore the checks there for matching userId just directly delete the post.
 
 
+Now I will be doing some work on frontend
+frontend done now will add some sort of backend for that
 
+1- send in a get request (name, email, role, number of posts)
+2- use that update user request to be used by admin only to update the role.
 
 
 
