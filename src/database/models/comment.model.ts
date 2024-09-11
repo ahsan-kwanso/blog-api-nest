@@ -32,22 +32,26 @@ export class Comment extends Model<Comment> {
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
-    onDelete: 'CASCADE',
   })
   PostId: number;
 
-  @BelongsTo(() => Post)
+  @BelongsTo(() => Post, {
+    foreignKey: 'PostId',
+    onDelete: 'CASCADE', // Cascade delete when post is deleted
+  })
   post: Post;
 
   @ForeignKey(() => Comment)
   @Column({
     type: DataType.INTEGER,
     allowNull: true,
-    onDelete: 'CASCADE',
   })
   ParentCommentId: number;
 
-  @BelongsTo(() => Comment, 'ParentCommentId')
+  @BelongsTo(() => Comment, {
+    foreignKey: 'ParentCommentId',
+    onDelete: 'CASCADE', // Ensure this is set
+  })
   parentComment: Comment;
 
   @Column({
