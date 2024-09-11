@@ -51,8 +51,10 @@ export class UserController {
   async update(
     @Param('id', ParseIntPipe) id: string,
     @Body() updateUserDto: UpdateUserDto,
+    @Req() req: ExpressRequest,
   ) {
-    return this.userService.update(+id, updateUserDto);
+    const adminId = req.user.id;
+    return this.userService.update(+id, updateUserDto, adminId);
   }
 
   @Delete(':id')

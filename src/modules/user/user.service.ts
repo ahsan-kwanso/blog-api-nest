@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Sequelize } from 'sequelize';
@@ -71,7 +72,14 @@ export class UserService {
     return user;
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+  async update(
+    id: number,
+    updateUserDto: UpdateUserDto,
+    adminId: number,
+  ): Promise<User> {
+    if (id === adminId) {
+      throw new ForbiddenException("You can't modify your own records.");
+    }
     const user = await this.findOne(id);
     await user.update(updateUserDto);
     return user;
