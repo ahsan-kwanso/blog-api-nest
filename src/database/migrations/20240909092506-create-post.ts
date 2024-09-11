@@ -23,7 +23,7 @@ export = {
         allowNull: false,
       },
       content: {
-        type: DataTypes.STRING(200),
+        type: DataTypes.STRING(500),
         allowNull: false,
       },
       createdAt: {
