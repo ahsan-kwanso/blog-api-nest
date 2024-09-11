@@ -8,7 +8,7 @@ import { Comment } from 'src/database/models/comment.model';
 import { Post } from 'src/database/models/post.model';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
-import { CommentData } from 'src/types/comment';
+import { CommentData, CommentsResult } from 'src/types/comment';
 
 @Injectable()
 export class CommentService {
@@ -105,7 +105,7 @@ export class CommentService {
     return comment.reload();
   }
 
-  async findAllByPostId(postId: number): Promise<CommentData[]> {
+  async findAllByPostId(postId: number): Promise<CommentsResult> {
     const post = await this.postModel.findByPk(postId);
     if (!post) {
       throw new NotFoundException('Post not found');
@@ -114,7 +114,7 @@ export class CommentService {
     const comments = await this.commentModel.findAll({
       where: { PostId: postId },
     });
-    return this.buildCommentTree(comments);
+    return { comments: this.buildCommentTree(comments) };
   }
 
   async findAll(): Promise<Comment[]> {

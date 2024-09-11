@@ -14,7 +14,7 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { Comment } from 'src/database/models/comment.model';
 import { Request } from 'express';
-import { CommentData } from 'src/types/comment';
+import { CommentData, CommentsResult } from 'src/types/comment';
 
 @Controller('comments')
 export class CommentController {
@@ -37,7 +37,7 @@ export class CommentController {
   @Get('/post/:id')
   async findCommentsOnPost(
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<CommentData[]> {
+  ): Promise<CommentsResult> {
     return this.commentService.findAllByPostId(id);
   }
 
