@@ -6,7 +6,6 @@ import {
   Param,
   Delete,
   ParseIntPipe,
-  Patch,
   Query,
   Req,
   UseGuards,
@@ -20,6 +19,9 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { Post as PostModel } from 'src/database/models/post.model';
 import { PaginatedPostsResponse } from 'src/types/post';
 import { JwtConditionalAuthGuard } from '../auth/jwt.auth.guard';
+import { Role } from 'src/types/role.enum';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator'; //our custom decorator
 
 @Controller('posts')
 export class PostController {
@@ -110,12 +112,15 @@ export class PostController {
   }
 
   // Delete a post by ID (only if the user owns the post)
+  // @UseGuards(RolesGuard) // Apply guards
+  // @Roles(Role.USER, Role.ADMIN) // Only admin users can delete posts
   @Delete(':id')
   async remove(
     @Param('id', ParseIntPipe) id: number,
     @Req() req: ExpressRequest,
   ): Promise<void> {
-    const userId = req.user.id; // Extract userId from the JWT
-    return this.postService.remove(id, userId);
+    const userId = req.user.id; // Extract userId from the JWT;
+    const role = req.user.role;
+    return this.postService.remove(id, userId, role);
   }
 }

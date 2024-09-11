@@ -14,6 +14,7 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PaginatedPostsResponse, PostResponse } from 'src/types/post';
 import paginationConfig from 'src/utils/pagination.config';
+import { Role } from 'src/types/role.enum';
 
 @Injectable()
 export class PostService {
@@ -271,9 +272,11 @@ export class PostService {
     return post;
   }
 
-  async remove(id: number, userId: number): Promise<void> {
+  async remove(id: number, userId: number, userRole: Role): Promise<void> {
     const post = await this.findOne(id);
-
+    if (userRole === Role.ADMIN) {
+      return await post.destroy();
+    }
     // Check if the user owns the post
     if (post.UserId !== userId) {
       throw new ForbiddenException(
@@ -281,6 +284,6 @@ export class PostService {
       );
     }
 
-    await post.destroy();
+    return await post.destroy();
   }
 }

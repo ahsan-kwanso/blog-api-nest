@@ -8,13 +8,18 @@ import {
   Delete,
   Req,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Request as ExpressRequest } from 'express';
+import { Roles } from '../auth/roles.decorator';
+import { Role } from 'src/types/role.enum';
+import { RolesGuard } from '../auth/roles.guard';
 
 @Controller('users')
+@UseGuards(RolesGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -24,6 +29,7 @@ export class UserController {
   }
 
   @Get()
+  @Roles(Role.ADMIN)
   async findAll() {
     return this.userService.findAll();
   }

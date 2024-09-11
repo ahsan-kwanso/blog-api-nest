@@ -5,13 +5,14 @@ import {
   MiddlewareConsumer,
   RequestMethod,
 } from '@nestjs/common';
-import { APP_PIPE } from '@nestjs/core';
+import { APP_PIPE, APP_GUARD } from '@nestjs/core';
 import { DatabaseModule } from './modules/database.module';
 import { UserModule } from './modules/user/user.module';
 import { PostModule } from './modules/post/post.module';
 import { CommentModule } from './modules/comment/comment.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { AuthMiddleware } from './modules/auth/auth.middleware';
+import { RolesGuard } from './modules/auth/roles.guard';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
@@ -24,6 +25,10 @@ import { ConfigModule } from '@nestjs/config';
     AuthModule,
   ],
   providers: [
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
     {
       provide: APP_PIPE,
       useClass: ValidationPipe,
