@@ -32,6 +32,7 @@ export class Comment extends Model<Comment> {
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
+    onDelete: 'CASCADE',
   })
   PostId: number;
 
@@ -42,6 +43,7 @@ export class Comment extends Model<Comment> {
   @Column({
     type: DataType.INTEGER,
     allowNull: true,
+    onDelete: 'CASCADE',
   })
   ParentCommentId: number;
 
