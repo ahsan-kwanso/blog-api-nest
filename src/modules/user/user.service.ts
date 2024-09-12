@@ -10,13 +10,20 @@ import { User } from 'src/database/models/user.model';
 import { Post } from 'src/database/models/post.model';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserWithNumberOfPosts } from 'src/types/user';
+import {
+  PaginatedUserWithNumberOfPosts,
+  UserWithNumberOfPosts,
+} from 'src/types/user';
+import paginationConfig from 'src/utils/pagination.config';
+import { Request as ExpressRequest } from 'express';
+import { UrlGeneratorService } from 'src/utils/pagination.util';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User)
     private readonly userModel: typeof User,
+    private readonly urlGeneratorService: UrlGeneratorService,
   ) {}
 
   async create(createUserDto: Partial<CreateUserDto>): Promise<User> {
@@ -62,6 +69,61 @@ export class UserService {
       role: user.role,
       posts: Number(user.posts), // Cast the posts count to a number
     }));
+  }
+
+  async findAllPaginated(
+    page: number = paginationConfig.defaultPage,
+    limit: number = paginationConfig.defaultLimit,
+    req: ExpressRequest,
+  ): Promise<PaginatedUserWithNumberOfPosts> {
+    const pageSize = Number(limit);
+    const pageNumber = Number(page);
+
+    const { count, rows } = await this.userModel.findAndCountAll({
+      attributes: [
+        'id',
+        'name',
+        'email',
+        'role',
+        // Use Sequelize.fn to count the number of posts and cast it as an integer
+        [Sequelize.fn('COUNT', Sequelize.col('posts.id')), 'posts'],
+      ],
+      include: [
+        {
+          model: Post, // Include the Post model to count posts
+          attributes: [], // No need to return post attributes, just count
+          required: false, // Ensure it's a LEFT OUTER JOIN
+        },
+      ],
+      group: ['User.id'],
+      limit: pageSize,
+      offset: (pageNumber - 1) * pageSize,
+      raw: true, // Return raw results instead of Sequelize model instances
+      subQuery: false, // Prevent Sequelize from generating a subquery
+    });
+
+    const users: UserWithNumberOfPosts[] = rows.map((user) => ({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      posts: Number(user.posts), // Cast the posts count to a number
+    }));
+    const totalCount = count.length;
+    const totalPages = Math.ceil(totalCount / pageSize);
+    const nextPage = pageNumber < totalPages ? pageNumber + 1 : null;
+
+    return {
+      users,
+      total: totalCount,
+      page: pageNumber,
+      pageSize: pageSize,
+      nextPage: this.urlGeneratorService.generateNextPageUrl(
+        nextPage,
+        pageSize,
+        req,
+      ), // Use the UrlGeneratorService
+    };
   }
 
   async findOne(id: number): Promise<User> {

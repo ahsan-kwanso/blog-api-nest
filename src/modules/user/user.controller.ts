@@ -9,10 +9,12 @@ import {
   Req,
   ParseIntPipe,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { PaginationQueryDto } from '../post/dto/pagination.dto';
 import { Request as ExpressRequest } from 'express';
 import { Roles } from '../auth/roles.decorator';
 import { Role } from 'src/types/role.enum';
@@ -28,10 +30,23 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
-  @Get()
+  @Get('/v1')
   @Roles(Role.ADMIN)
   async findAll() {
     return this.userService.findAll();
+  }
+
+  @Get()
+  @Roles(Role.ADMIN)
+  async findAllPag(
+    @Query() paginationQuery: PaginationQueryDto,
+    @Req() req: ExpressRequest,
+  ) {
+    return this.userService.findAllPaginated(
+      paginationQuery.page,
+      paginationQuery.limit,
+      req,
+    );
   }
 
   // get the logged in user
