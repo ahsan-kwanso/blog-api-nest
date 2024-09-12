@@ -39,13 +39,21 @@ export class UserController {
   @Get()
   @Roles(Role.ADMIN)
   async findAllPag(
-    @Query() paginationQuery: PaginationQueryDto,
     @Req() req: ExpressRequest,
+    @Query() paginationQuery?: PaginationQueryDto,
+    @Query('role') role?: string,
+    @Query('sortBy') sortBy?: string,
+    @Query('sortOrder') sortOrder?: 'asc' | 'desc',
   ) {
+    const page = paginationQuery?.page;
+    const limit = paginationQuery?.limit;
     return this.userService.findAllPaginated(
-      paginationQuery.page,
-      paginationQuery.limit,
       req,
+      page,
+      limit,
+      role,
+      sortBy,
+      sortOrder,
     );
   }
 

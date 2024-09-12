@@ -72,12 +72,27 @@ export class UserService {
   }
 
   async findAllPaginated(
+    req: ExpressRequest,
     page: number = paginationConfig.defaultPage,
     limit: number = paginationConfig.defaultLimit,
-    req: ExpressRequest,
+    role?: string,
+    sortBy?: string,
+    sortOrder?: 'asc' | 'desc',
   ): Promise<PaginatedUserWithNumberOfPosts> {
     const pageSize = Number(limit);
     const pageNumber = Number(page);
+
+    // Construct order clause based on sortBy and sortOrder
+    const order: [string, 'asc' | 'desc'][] = [];
+    if (sortBy) {
+      const sortField = sortBy === 'posts' ? 'posts' : 'name';
+      order.push([sortField, sortOrder || 'asc']);
+    }
+
+    const where: any = {};
+    if (role) {
+      where.role = role;
+    }
 
     const { count, rows } = await this.userModel.findAndCountAll({
       attributes: [
@@ -85,21 +100,22 @@ export class UserService {
         'name',
         'email',
         'role',
-        // Use Sequelize.fn to count the number of posts and cast it as an integer
         [Sequelize.fn('COUNT', Sequelize.col('posts.id')), 'posts'],
       ],
       include: [
         {
-          model: Post, // Include the Post model to count posts
-          attributes: [], // No need to return post attributes, just count
-          required: false, // Ensure it's a LEFT OUTER JOIN
+          model: Post,
+          attributes: [],
+          required: false,
         },
       ],
+      where,
       group: ['User.id'],
       limit: pageSize,
       offset: (pageNumber - 1) * pageSize,
-      raw: true, // Return raw results instead of Sequelize model instances
-      subQuery: false, // Prevent Sequelize from generating a subquery
+      raw: true,
+      order,
+      subQuery: false,
     });
 
     const users: UserWithNumberOfPosts[] = rows.map((user) => ({
